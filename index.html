@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultimate Battle Royale</title>
+<style>
+body { margin:0; background:#020617; color:white; font-family:Arial; }
+#screen { padding:10px; }
+button { padding:10px; margin:5px; border-radius:10px; border:none; }
+.select { display:flex; flex-wrap:wrap; }
+.card {
+  background:#0f172a; padding:10px; margin:5px;
+  border-radius:12px; width:140px; text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div id="screen"></div>
+
+<script>
+// ---------- DATA SYSTEM ----------
+
+// 20+ Guns
+const guns = [
+ {name:"Pistol", dmg:20}, {name:"SMG", dmg:15}, {name:"Rifle", dmg:25},
+ {name:"Shotgun", dmg:40}, {name:"Sniper", dmg:70},
+ {name:"AR-X", dmg:30}, {name:"M4", dmg:28}, {name:"AK", dmg:35},
+ {name:"MP5", dmg:18}, {name:"UMP", dmg:20},
+ {name:"FAMAS", dmg:26}, {name:"SCAR", dmg:32},
+ {name:"GROZA", dmg:38}, {name:"VECTOR", dmg:16},
+ {name:"P90", dmg:22}, {name:"M1014", dmg:45},
+ {name:"AWM", dmg:80}, {name:"M1887", dmg:50},
+ {name:"SKS", dmg:42}, {name:"XM8", dmg:29}
+];
+
+// 15+ Characters
+const characters = [
+ "Rex","Nova","Blaze","Shadow","Storm",
+ "Hunter","Viper","Ghost","Ace","Wolf",
+ "Falcon","Knight","Rogue","Titan","Zero"
+];
+
+// 6 Maps
+const maps = [
+ "Desert","Forest","Snow","City","Island","Night"
+];
+
+// Match Types
+const matches = ["Solo","Team","Survival"];
+
+let selected = { gun:null, char:null, map:null, match:null };
+let coins = Number(localStorage.getItem("coins") || 0);
+
+// ---------- UI SCREENS ----------
+
+function home() {
+ document.getElementById("screen").innerHTML = `
+  <h2>🔥 Ultimate Battle Royale</h2>
+  💰 Coins: ${coins}<br><br>
+  <button onclick="selectGun()">🔫 Select Gun</button>
+  <button onclick="selectChar()">🧍 Select Character</button>
+  <button onclick="selectMap()">🗺️ Select Map</button>
+  <button onclick="selectMatch()">⚔️ Match Type</button><br><br>
+  <button onclick="startGame()">▶ START MATCH</button>
+ `;
+}
+
+function makeSelection(title, list, key) {
+ document.getElementById("screen").innerHTML = `
+  <h3>${title}</h3>
+  <div class="select">
+    ${list.map(i=>`
+      <div class="card" onclick="choose('${key}','${i.name||i}')">
+        ${i.name||i}<br>
+        ${i.dmg ? "DMG: "+i.dmg : ""}
+      </div>`).join("")}
+  </div>
+  <button onclick="home()">⬅ Back</button>
+ `;
+}
+
+function choose(key,val){
+ selected[key]=val;
+ home();
+}
+
+// Screens
+const selectGun = ()=>makeSelection("Select Gun",guns,"gun");
+const selectChar = ()=>makeSelection("Select Character",characters,"char");
+const selectMap = ()=>makeSelection("Select Map",maps,"map");
+const selectMatch = ()=>makeSelection("Select Match",matches,"match");
+
+// ---------- GAME LOGIC ----------
+
+function startGame(){
+ if(!selected.gun||!selected.char||!selected.map||!selected.match){
+  alert("Select everything first!");
+  return;
+ }
+
+ let kills = Math.floor(Math.random()*5)+1;
+ let reward = kills * 10;
+ coins += reward;
+ localStorage.setItem("coins",coins);
+
+ document.getElementById("screen").innerHTML = `
+  <h2>🏆 Match Finished</h2>
+  🔫 Gun: ${selected.gun}<br>
+  🧍 Character: ${selected.char}<br>
+  🗺️ Map: ${selected.map}<br>
+  ⚔️ Match: ${selected.match}<br><br>
+  ☠ Kills: ${kills}<br>
+  💰 Earned: ${reward} coins<br><br>
+  <button onclick="home()">🏠 Home</button>
+ `;
+}
+
+home();
+</script>
+
+</body>
+</html>
